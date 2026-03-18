@@ -130,3 +130,37 @@ export interface TooltipData {
   /** Indica si los datos del tooltip se estan cargando */
   loading: boolean;
 }
+
+/**
+ * Interface para resumen ESAVI.
+ */
+export interface EsaviResumen {
+  /** Total de registros ESAVI */
+  total_registros: number;
+  /** Total de eventos clasificados como graves */
+  total_graves: number;
+  /** Total de eventos clasificados como no graves */
+  total_no_graves: number;
+  /** Conteo por sexo */
+  por_sexo: Record<string, number>;
+  /** Conteo por grupo etario */
+  por_grupo_etario: Record<string, number>;
+  /** Conteo por area de salud */
+  por_area_salud: Record<string, number>;
+}
+
+/**
+ * Interface para respuesta ESAVI filtrada.
+ */
+export interface EsaviFiltrado {
+  /** Total de registros luego de aplicar filtros */
+  total_registros: number;
+  /** Filtros aplicados por la API */
+  filtros_aplicados: Record<string, string>;
+  /** Distribucion por sexo del subconjunto filtrado */
+  por_sexo: Record<string, number>;
+  /** Distribucion por clasificacion del subconjunto filtrado */
+  por_clasificacion: Record<string, number>;
+  /** Distribucion por grupo etario del subconjunto filtrado */
+  por_grupo_etario: Record<string, number>;
+}

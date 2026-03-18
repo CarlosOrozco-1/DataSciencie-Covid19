@@ -85,3 +85,22 @@ class DatosFiltrados(BaseModel):
     datos: List[Dict] = Field(default_factory=list, description="Lista de datos filtrados")
     total_registros: int = Field(0, description="Total de registros encontrados")
     filtros_aplicados: Optional[Dict] = Field(None, description="Filtros que se aplicaron")
+
+
+class EsaviResumen(BaseModel):
+    """Modelo para resumen general de eventos ESAVI."""
+    total_registros: int = Field(0, description="Total de registros ESAVI")
+    total_graves: int = Field(0, description="Total de registros graves")
+    total_no_graves: int = Field(0, description="Total de registros no graves")
+    por_sexo: Dict[str, int] = Field(default_factory=dict, description="Distribución por sexo")
+    por_grupo_etario: Dict[str, int] = Field(default_factory=dict, description="Distribución por grupo etario")
+    por_area_salud: Dict[str, int] = Field(default_factory=dict, description="Distribución por área de salud")
+
+
+class EsaviFiltrado(BaseModel):
+    """Modelo para resultados filtrados de ESAVI."""
+    total_registros: int = Field(0, description="Total de registros tras aplicar filtros")
+    filtros_aplicados: Dict[str, str] = Field(default_factory=dict, description="Filtros aplicados")
+    por_sexo: Dict[str, int] = Field(default_factory=dict, description="Distribución por sexo filtrada")
+    por_clasificacion: Dict[str, int] = Field(default_factory=dict, description="Distribución por clasificación")
+    por_grupo_etario: Dict[str, int] = Field(default_factory=dict, description="Distribución por grupo etario filtrada")

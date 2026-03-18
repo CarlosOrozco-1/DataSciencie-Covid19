@@ -5,7 +5,7 @@ Este archivo contiene la lógica de negocio para leer y procesar los archivos CS
 
 import pandas as pd
 from pathlib import Path
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict
 from app.config import DATOS_DIR, ARCHIVOS_CSV
 
 
@@ -18,7 +18,9 @@ class DataService:
     def __init__(self):
         """Inicializa el servicio cargando los datos CSV."""
         self._dataframes: Dict[str, pd.DataFrame] = {}
+        self._esavi_dataframe: Optional[pd.DataFrame] = None
         self._cargar_datos()
+        self._cargar_esavi()
     
     def _cargar_datos(self) -> None:
         """
@@ -31,6 +33,31 @@ class DataService:
                 self._dataframes[clave] = pd.read_csv(ruta)
             else:
                 print(f"Advertencia: No se encontró el archivo {nombre_archivo}")
+
+    def _cargar_esavi(self) -> None:
+        """
+        Carga la base ESAVI desde archivo Excel si está disponible.
+
+        El archivo es opcional para no bloquear el resto de endpoints.
+        """
+        ruta_esavi = DATOS_DIR / "Base_de_Datos_ESAVIS.xlsx"
+
+        if not ruta_esavi.exists():
+            print("Advertencia: No se encontró Base_de_Datos_ESAVIS.xlsx")
+            return
+
+        try:
+            df_esavi = pd.read_excel(ruta_esavi)
+
+            # Normalizar espacios y valores de texto clave.
+            for columna in ["Sexo", "Grupo_etario", "Clasificación", "Area_salud"]:
+                if columna in df_esavi.columns:
+                    df_esavi[columna] = df_esavi[columna].astype(str).str.strip()
+
+            self._esavi_dataframe = df_esavi
+        except Exception as exc:
+            print(f"Advertencia: Error al cargar ESAVI: {exc}")
+            self._esavi_dataframe = None
     
     def _obtener_dataframe(self, tipo: str) -> Optional[pd.DataFrame]:
         """
@@ -63,6 +90,10 @@ class DataService:
             df_limpio = df_limpio[df_limpio["municipio"].astype(str).str.strip() != "0"]
 
         return df_limpio
+
+    def _obtener_dataframe_esavi(self) -> Optional[pd.DataFrame]:
+        """Retorna DataFrame ESAVI si está cargado."""
+        return self._esavi_dataframe
     
     def obtener_lista_departamentos(self) -> List[Dict]:
         """
@@ -378,6 +409,129 @@ class DataService:
             "datos": resultados,
             "total_registros": len(resultados),
             "filtros_aplicados": filtros if filtros else None
+        }
+
+    def obtener_resumen_esavi(self) -> Dict:
+        """
+        Obtiene resumen general de la base ESAVI.
+
+        Returns:
+            Diccionario con totales y distribuciones principales.
+        """
+        df_esavi = self._obtener_dataframe_esavi()
+        if df_esavi is None or df_esavi.empty:
+            return {
+                "total_registros": 0,
+                "total_graves": 0,
+                "total_no_graves": 0,
+                "por_sexo": {},
+                "por_grupo_etario": {},
+                "por_area_salud": {},
+            }
+
+        clasificacion = df_esavi["Clasificación"] if "Clasificación" in df_esavi.columns else pd.Series(dtype=str)
+        total_graves = int((clasificacion == "GRAVE").sum()) if not clasificacion.empty else 0
+        total_no_graves = int((clasificacion == "NO GRAVE").sum()) if not clasificacion.empty else 0
+
+        por_sexo = (
+            df_esavi["Sexo"].value_counts().to_dict()
+            if "Sexo" in df_esavi.columns
+            else {}
+        )
+
+        por_grupo_etario = (
+            df_esavi["Grupo_etario"].value_counts().head(10).to_dict()
+            if "Grupo_etario" in df_esavi.columns
+            else {}
+        )
+
+        por_area_salud = (
+            df_esavi["Area_salud"].value_counts().head(10).to_dict()
+            if "Area_salud" in df_esavi.columns
+            else {}
+        )
+
+        return {
+            "total_registros": int(len(df_esavi)),
+            "total_graves": total_graves,
+            "total_no_graves": total_no_graves,
+            "por_sexo": {str(k): int(v) for k, v in por_sexo.items()},
+            "por_grupo_etario": {str(k): int(v) for k, v in por_grupo_etario.items()},
+            "por_area_salud": {str(k): int(v) for k, v in por_area_salud.items()},
+        }
+
+    def obtener_esavi_filtrado(
+        self,
+        sexo: Optional[str] = None,
+        grupo_etario: Optional[str] = None,
+        clasificacion: Optional[str] = None,
+        area_salud: Optional[str] = None,
+    ) -> Dict:
+        """
+        Obtiene resumen ESAVI filtrado por atributos principales.
+
+        Args:
+            sexo: Filtro por sexo (Masculino/Femenino)
+            grupo_etario: Filtro por grupo etario
+            clasificacion: Filtro por clasificación (GRAVE/NO GRAVE)
+            area_salud: Filtro por área de salud
+
+        Returns:
+            Resumen agregado de la data filtrada.
+        """
+        df_esavi = self._obtener_dataframe_esavi()
+        if df_esavi is None or df_esavi.empty:
+            return {
+                "total_registros": 0,
+                "filtros_aplicados": {},
+                "por_sexo": {},
+                "por_clasificacion": {},
+                "por_grupo_etario": {},
+            }
+
+        df_filtrado = df_esavi.copy()
+        filtros_aplicados: Dict[str, str] = {}
+
+        if sexo and "Sexo" in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado["Sexo"].str.lower() == sexo.lower()]
+            filtros_aplicados["sexo"] = sexo
+
+        if grupo_etario and "Grupo_etario" in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado["Grupo_etario"].str.lower() == grupo_etario.lower()]
+            filtros_aplicados["grupo_etario"] = grupo_etario
+
+        if clasificacion and "Clasificación" in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado["Clasificación"].str.lower() == clasificacion.lower()]
+            filtros_aplicados["clasificacion"] = clasificacion
+
+        if area_salud and "Area_salud" in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado["Area_salud"].str.lower() == area_salud.lower()]
+            filtros_aplicados["area_salud"] = area_salud
+
+        por_sexo = (
+            df_filtrado["Sexo"].value_counts().to_dict()
+            if "Sexo" in df_filtrado.columns
+            else {}
+        )
+
+        por_clasificacion = (
+            df_filtrado["Clasificación"].value_counts().to_dict()
+            if "Clasificación" in df_filtrado.columns
+            else {}
+        )
+
+        por_grupo_etario = (
+            df_filtrado["Grupo_etario"].value_counts().head(10).to_dict()
+            if "Grupo_etario" in df_filtrado.columns
+            else {}
+        )
+
+        return {
+            "total_registros": int(len(df_filtrado)),
+            "filtros_aplicados": filtros_aplicados,
+            "por_sexo": {str(k): int(v) for k, v in por_sexo.items()},
+            "por_clasificacion": {str(k): int(v) for k, v in por_clasificacion.items()},
+            "por_grupo_etario": {str(k): int(v) for k, v in por_grupo_etario.items()},
         }
 
 

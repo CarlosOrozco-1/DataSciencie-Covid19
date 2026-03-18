@@ -12,7 +12,9 @@ import {
   DatosDepartamento,
   DatosMunicipio,
   ResumenNacional,
-  DatosFiltrados
+  DatosFiltrados,
+  EsaviResumen,
+  EsaviFiltrado
 } from '../../models/covid.models';
 
 /**
@@ -138,5 +140,48 @@ export class CovidService {
     return this.http.get<DatosFiltrados>(
       `${API_BASE_URL}/filtrar${queryString}`
     );
+  }
+
+  /**
+   * Obtiene el resumen agregado de la base ESAVI.
+   *
+   * @returns Observable con totales y distribuciones ESAVI
+   */
+  obtenerResumenEsavi(): Observable<EsaviResumen> {
+    return this.http.get<EsaviResumen>(`${API_BASE_URL}/esavi/resumen`);
+  }
+
+  /**
+   * Obtiene resumen ESAVI filtrado por criterios opcionales.
+   *
+   * @param sexo - Filtro por sexo
+   * @param grupoEtario - Filtro por grupo etario
+   * @param clasificacion - Filtro por clasificacion
+   * @param areaSalud - Filtro por area de salud
+   * @returns Observable con agregados del subconjunto filtrado
+   */
+  obtenerEsaviFiltrado(
+    sexo?: string,
+    grupoEtario?: string,
+    clasificacion?: string,
+    areaSalud?: string
+  ): Observable<EsaviFiltrado> {
+    const params: string[] = [];
+
+    if (sexo) {
+      params.push(`sexo=${encodeURIComponent(sexo)}`);
+    }
+    if (grupoEtario) {
+      params.push(`grupo_etario=${encodeURIComponent(grupoEtario)}`);
+    }
+    if (clasificacion) {
+      params.push(`clasificacion=${encodeURIComponent(clasificacion)}`);
+    }
+    if (areaSalud) {
+      params.push(`area_salud=${encodeURIComponent(areaSalud)}`);
+    }
+
+    const queryString = params.length > 0 ? `?${params.join('&')}` : '';
+    return this.http.get<EsaviFiltrado>(`${API_BASE_URL}/esavi/filtrar${queryString}`);
   }
 }

@@ -1,0 +1,221 @@
+/**
+ * Estilos de página ESAVI.
+ * Prioriza lectura de filtros, totales y distribuciones.
+ */
+
+.esavi-intro {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 16px;
+}
+
+.esavi-intro h2 {
+  margin-bottom: 8px;
+}
+
+.esavi-intro p {
+  color: #475569;
+}
+
+.esavi-periodo {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #0f766e;
+}
+
+.esavi-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.esavi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.esavi-item {
+  background: #f7fbff;
+  border: 1px solid #e2eef9;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.esavi-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a5276;
+}
+
+.esavi-label {
+  font-size: 13px;
+  color: #5d6d7e;
+}
+
+.esavi-filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filtro-item label {
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.filtro-item select {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.filtro-actions {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #1f7a8c;
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.esavi-resultado {
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.esavi-total {
+  color: #334155;
+  margin: 6px 0 10px;
+}
+
+.esavi-cargando {
+  color: #2563eb;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.esavi-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.esavi-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.esavi-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px dashed #e5e7eb;
+  padding: 8px 0;
+}
+
+.esavi-list-head {
+  display: flex;
+  justify-content: space-between;
+}
+
+.esavi-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.esavi-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.esavi-bar-fill.sexo {
+  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+}
+
+.esavi-bar-fill.grupo {
+  background: linear-gradient(90deg, #14b8a6, #0f766e);
+}
+
+.esavi-bar-fill.clasificacion {
+  background: linear-gradient(90deg, #f97316, #ea580c);
+}
+
+.loading {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 14px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: #fee;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+@media (max-width: 768px) {
+  .esavi-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .filtro-actions {
+    align-items: stretch;
+  }
+}

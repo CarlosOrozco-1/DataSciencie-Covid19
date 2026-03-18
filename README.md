@@ -61,6 +61,10 @@ python scripts/verificar_datos.py
 
 ## Ejecutar el Proyecto
 
+Si quieres un paso a paso completo para un colaborador nuevo, revisa:
+
+- `SETUP_DESDE_CERO.md`
+
 ### Backend (en distrobox)
 ```bash
 cd backend
@@ -83,6 +87,10 @@ ng serve
 
 ## Documentación de la API
 Una vez ejecutando el backend, visita: `http://localhost:8000/docs`
+
+## Navegación del frontend
+- `http://localhost:4200/dashboard` → mapa COVID por departamento
+- `http://localhost:4200/esavi` → análisis ESAVI (vacunación)
 
 ## Fase Actual
 - ✅ Fase 0: Configuración del entorno

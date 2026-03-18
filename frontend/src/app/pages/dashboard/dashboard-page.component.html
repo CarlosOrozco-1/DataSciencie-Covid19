@@ -1,0 +1,70 @@
+<!--
+  Página Dashboard COVID.
+  Contiene tarjetas de resumen, mapa y leyenda de uso.
+-->
+
+<!-- Sección de estadísticas generales -->
+<section class="stats-section" *ngIf="!cargando && !error && resumen">
+  <div class="stats-grid">
+    <div class="stat-card confirmado">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatearNumero(resumen.total_confirmados) }}</div>
+        <div class="stat-label">Total Confirmados</div>
+      </div>
+    </div>
+
+    <div class="stat-card fallecido">
+      <div class="stat-icon">💔</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatearNumero(resumen.total_fallecidos) }}</div>
+        <div class="stat-label">Total Fallecidos</div>
+      </div>
+    </div>
+
+    <div class="stat-card tamizado">
+      <div class="stat-icon">🧪</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatearNumero(resumen.total_tamizados) }}</div>
+        <div class="stat-label">Total Tamizados</div>
+      </div>
+    </div>
+
+    <div class="stat-card poblacion">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatearNumero(resumen.poblacion_total) }}</div>
+        <div class="stat-label">Población Total</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Indicador de carga -->
+<div class="loading" *ngIf="cargando">
+  <div class="spinner"></div>
+  <p>Cargando datos COVID...</p>
+</div>
+
+<!-- Mensaje de error -->
+<div class="error-message" *ngIf="error">
+  <p>⚠️ {{ error }}</p>
+</div>
+
+<!-- Mapa de Guatemala -->
+<section class="map-section" *ngIf="!cargando && !error">
+  <app-mapa></app-mapa>
+</section>
+
+<!-- Leyenda del mapa -->
+<section class="legend-section" *ngIf="!cargando && !error && resumen">
+  <div class="legend">
+    <h3>📌 Instrucciones</h3>
+    <ul>
+      <li>Posiciona el cursor sobre un departamento para ver sus datos</li>
+      <li>Los datos se cargan automáticamente desde la API</li>
+      <li>Total de departamentos: {{ resumen.num_departamentos }}</li>
+      <li>Total de municipios: {{ resumen.num_municipios }}</li>
+    </ul>
+  </div>
+</section>

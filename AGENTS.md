@@ -80,41 +80,71 @@ Estructura de columnas: `departamento`, `codigo_departamento`, `municipio`, `cod
 
 ## Convenciones de Código
 
-### Python
+
+### Python (Backend)
 - Usar **Pydantic** para modelos de datos
 - Usar **pandas** para procesamiento de CSV
 - snake_case para variables, PascalCase para clases
-- Comentar cada función y sección importante
-- Español (comentarios), English (código)
+- Comentar cada función y sección importante (en español)
+- Código en inglés, comentarios en español
+- CSVs deben estar en `backend/Datos` o `Datos/` (raíz), no versionados
+- Activar venv antes de ejecutar uvicorn (soluciona `uvicorn: command not found`)
 
-### Angular / TypeScript
-- Angular 17+ con standalone components
+### Angular / TypeScript (Frontend)
+- Angular 17+ con componentes standalone
 - camelCase para variables, kebab-case para archivos
 - Servicios con HttpClient para llamadas HTTP
 - Interfaces TypeScript para tipos de datos
 - D3.js para visualizaciones (mapa coroplético)
 - GeoJSON para datos geográficos de Guatemala
+- Componentes: mapa, tooltip, dashboard
+
 
 ### Comentarios en Código
 - Agregar comentarios descriptivos en cada bloque de código
 - Documentar funciones con JSDoc/TSDoc
 - Explicar la lógica de negocio en español
+- Todo cambio debe ser comentado en el código, indicando el cambio realizado (qué, dónde y por qué).
+
+### Build/Test Commands
+- Backend:
+	- `cd backend && source venv/bin/activate && pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`
+	- Si uvicorn no está en PATH: `venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`
+- Frontend:
+	- `cd frontend && npm install && npm install d3 @types/d3 && ng serve`
+
+### Pitfalls
+- CSVs no versionados: cada colaborador debe copiar localmente
+- uvicorn puede no estar en PATH si venv no está activado
+- Estructura flexible de carpeta Datos (backend/Datos o raíz)
+
+### Example Prompts
+- "Levanta el backend y verifica los endpoints de departamentos."
+- "Agrega un nuevo endpoint para filtrar municipios por población."
+- "Integra el mapa de Guatemala en el dashboard usando D3.js."
+- "Corrige el error de uvicorn: command not found."
+
+### Agent Customization Suggestions
+- /create-instruction-backend: Instrucciones especializadas para FastAPI y manejo de CSV
+- /create-instruction-frontend: Instrucciones para Angular, D3.js y visualización
+- /create-hook-csv-check: Hook para verificar presencia de archivos CSV antes de iniciar backend
+
 
 ## Ejecución
 
+
 ### Backend (en distrobox)
 ```bash
-cd /home/ceorozcom/Documents/Proyecto-API-Python-DataScience/backend
+cd backend
 source venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-
-### Nota técnica (distrobox + entorno virtual)
-- En distrobox, si no está activo el entorno virtual, puede aparecer: `uvicorn: command not found`.
-- Solución recomendada: activar `venv` antes de iniciar la API (`source venv/bin/activate`).
-- Alternativa: ejecutar el binario de forma explícita (`venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`).
-- Aunque en otros equipos se puede usar instalación global, para este proyecto se mantiene `venv` como práctica recomendada para aislar dependencias.
+Si aparece `uvicorn: command not found`, activar venv o ejecutar directo:
+```bash
+venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+Se recomienda usar venv para dependencias aisladas.
 
 ### Frontend
 ```bash
@@ -124,7 +154,9 @@ npm install d3 @types/d3
 ng serve
 ```
 
+
 ## Fases del Proyecto
+
 
 ### Fase 0: Configuración del Entorno ✅
 - Creación de distrobox
@@ -140,6 +172,7 @@ ng serve
 - Integración con D3.js
 - Tooltip interactivo al posicionar cursor sobre departamentos
 - Consumo de APIs del backend
+
 
 ## Notas Importantes
 - El proyecto corre en distrobox (entorno aislado Ubuntu)

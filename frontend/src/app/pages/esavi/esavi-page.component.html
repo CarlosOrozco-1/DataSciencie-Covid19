@@ -1,0 +1,157 @@
+<!--
+  Página ESAVI.
+  Incluye contexto, resumen general y módulo de filtros.
+-->
+
+<section class="esavi-intro">
+  <h2>Análisis ESAVI</h2>
+  <p>
+    Este módulo analiza <strong>Eventos Supuestamente Atribuibles a Vacunación o Inmunización (ESAVI)</strong>.
+    No representa el total de casos COVID del mapa territorial, sino eventos registrados en contexto de vacunación.
+  </p>
+  <p class="esavi-periodo">
+    Cobertura observada del archivo actual: <strong>2021-2024</strong> (la mayor concentración de registros está en 2021 y 2022).
+  </p>
+</section>
+
+<div class="loading" *ngIf="cargando">
+  <div class="spinner"></div>
+  <p>Cargando datos ESAVI...</p>
+</div>
+
+<div class="error-message" *ngIf="error">
+  <p>⚠️ {{ error }}</p>
+</div>
+
+<section class="esavi-section" *ngIf="!cargando && !error && resumenEsavi">
+  <div class="esavi-card">
+    <h3>Resumen general ESAVI</h3>
+
+    <div class="esavi-grid resumen-grid">
+      <div class="esavi-item">
+        <div class="esavi-value">{{ formatearNumero(resumenEsavi.total_registros) }}</div>
+        <div class="esavi-label">Total registros</div>
+      </div>
+      <div class="esavi-item">
+        <div class="esavi-value">{{ formatearNumero(resumenEsavi.total_graves) }}</div>
+        <div class="esavi-label">Clasificación grave</div>
+      </div>
+      <div class="esavi-item">
+        <div class="esavi-value">{{ formatearNumero(resumenEsavi.total_no_graves) }}</div>
+        <div class="esavi-label">Clasificación no grave</div>
+      </div>
+    </div>
+
+    <div class="esavi-filtros">
+      <div class="filtro-item">
+        <label for="filtroSexo">Sexo</label>
+        <select id="filtroSexo" [(ngModel)]="filtrosEsavi.sexo">
+          <option value="">Todos</option>
+          <option *ngFor="let sexo of sexosDisponibles" [value]="sexo">{{ sexo }}</option>
+        </select>
+      </div>
+
+      <div class="filtro-item">
+        <label for="filtroGrupo">Grupo etario</label>
+        <select id="filtroGrupo" [(ngModel)]="filtrosEsavi.grupo_etario">
+          <option value="">Todos</option>
+          <option *ngFor="let grupo of gruposEtariosDisponibles" [value]="grupo">{{ grupo }}</option>
+        </select>
+      </div>
+
+      <div class="filtro-item">
+        <label for="filtroClasificacion">Clasificación</label>
+        <select id="filtroClasificacion" [(ngModel)]="filtrosEsavi.clasificacion">
+          <option value="">Todas</option>
+          <option value="GRAVE">GRAVE</option>
+          <option value="NO GRAVE">NO GRAVE</option>
+        </select>
+      </div>
+
+      <div class="filtro-item">
+        <label for="filtroArea">Área de salud</label>
+        <select id="filtroArea" [(ngModel)]="filtrosEsavi.area_salud">
+          <option value="">Todas</option>
+          <option *ngFor="let area of areasSaludDisponibles" [value]="area">{{ area }}</option>
+        </select>
+      </div>
+
+      <div class="filtro-actions">
+        <button type="button" class="btn btn-primary" (click)="aplicarFiltrosEsavi()">Aplicar filtros</button>
+        <button type="button" class="btn btn-secondary" (click)="limpiarFiltrosEsavi()">Limpiar</button>
+      </div>
+    </div>
+
+    <div class="esavi-resultado" *ngIf="esaviFiltrado">
+      <h4>Resultado filtrado</h4>
+      <p class="esavi-total">
+        Registros encontrados: <strong>{{ formatearNumero(esaviFiltrado.total_registros) }}</strong>
+      </p>
+      <p class="esavi-cargando" *ngIf="cargandoEsaviFiltrado">Actualizando resultados...</p>
+
+      <div class="esavi-columns">
+        <div>
+          <h4>Por sexo</h4>
+          <ul class="esavi-list">
+            <li *ngFor="let item of convertirALista(esaviFiltrado.por_sexo)">
+              <div class="esavi-list-head">
+                <span>{{ item.clave }}</span>
+                <strong>{{ formatearNumero(item.valor) }}</strong>
+              </div>
+              <div class="esavi-bar">
+                <div class="esavi-bar-fill sexo" [style.width.%]="calcularPorcentaje(item.valor, esaviFiltrado.total_registros)"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Por clasificación</h4>
+          <ul class="esavi-list">
+            <li *ngFor="let item of convertirALista(esaviFiltrado.por_clasificacion)">
+              <div class="esavi-list-head">
+                <span>{{ item.clave }}</span>
+                <strong>{{ formatearNumero(item.valor) }}</strong>
+              </div>
+              <div class="esavi-bar">
+                <div class="esavi-bar-fill clasificacion" [style.width.%]="calcularPorcentaje(item.valor, esaviFiltrado.total_registros)"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="esavi-columns">
+      <div>
+        <h4>Distribución por sexo (global)</h4>
+        <ul class="esavi-list">
+          <li *ngFor="let item of convertirALista(resumenEsavi.por_sexo)">
+            <div class="esavi-list-head">
+              <span>{{ item.clave }}</span>
+              <strong>{{ formatearNumero(item.valor) }}</strong>
+            </div>
+            <div class="esavi-bar">
+              <div class="esavi-bar-fill sexo" [style.width.%]="calcularPorcentaje(item.valor, resumenEsavi.total_registros)"></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Top grupos etarios (global)</h4>
+        <ul class="esavi-list">
+          <li *ngFor="let item of convertirALista(resumenEsavi.por_grupo_etario)">
+            <div class="esavi-list-head">
+              <span>{{ item.clave }}</span>
+              <strong>{{ formatearNumero(item.valor) }}</strong>
+            </div>
+            <div class="esavi-bar">
+              <div class="esavi-bar-fill grupo" [style.width.%]="calcularPorcentaje(item.valor, resumenEsavi.total_registros)"></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

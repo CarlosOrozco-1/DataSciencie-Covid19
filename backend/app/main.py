@@ -11,7 +11,7 @@ from app.config import (
     API_DESCRIPTION,
     CORS_ORIGINS
 )
-from app.routers import departamentos, municipios, resumen
+from app.routers import departamentos, municipios, resumen, esavi
 
 # Crear aplicación FastAPI
 app = FastAPI(
@@ -33,6 +33,7 @@ app.add_middleware(
 app.include_router(departamentos.router)
 app.include_router(municipios.router)
 app.include_router(resumen.router)
+app.include_router(esavi.router)
 
 
 @app.get("/")
@@ -51,7 +52,9 @@ async def root():
             "departamentos": "/api/departamentos",
             "municipios": "/api/municipios",
             "resumen": "/api/resumen",
-            "filtrar": "/api/filtrar"
+            "filtrar": "/api/filtrar",
+            "esavi_resumen": "/api/esavi/resumen",
+            "esavi_filtrar": "/api/esavi/filtrar"
         }
     }
 

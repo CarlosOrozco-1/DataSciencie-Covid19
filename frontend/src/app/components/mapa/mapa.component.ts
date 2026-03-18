@@ -129,7 +129,7 @@ export class MapaComponent implements OnInit, AfterViewInit {
    * 
    * @param covidService - Servicio para consumir la API de COVID
    */
-  constructor(private covidService: CovidService) {}
+  constructor(private covidService: CovidService) { }
 
   /**
    * Método del ciclo de vida de Angular.
@@ -259,36 +259,55 @@ export class MapaComponent implements OnInit, AfterViewInit {
     // Crear grupo para los departamentos
     const g = svg.append('g');
 
-    // Dibujar cada departamento
-    g.selectAll('path')
-      .data(features)
-      .enter()
-      .append('path')
-      .attr('d', this.pathGenerator)
-      .attr('fill', '#3498db') // Color azul por defecto
-      .attr('stroke', '#ffffff') // Borde blanco
-      .attr('stroke-width', 1)
-      .attr('class', 'departamento')
-      .style('cursor', 'pointer')
-      .style('transition', 'fill 0.3s, transform 0.2s')
-      // Evento: al posicionar el cursor sobre un departamento
-      .on('mouseenter', (event: MouseEvent, d: GeoFeature) => {
-        this.mostrarTooltip(event, d);
-        // Cambiar color en hover
-        d3.select(event.target as SVGPathElement)
-          .attr('fill', '#2980b9');
-      })
-      // Evento: al mover el cursor dentro del departamento
-      .on('mousemove', (event: MouseEvent, d: GeoFeature) => {
-        this.actualizarPosicionTooltip(event);
-      })
-      // Evento: al salir el cursor del departamento
-      .on('mouseleave', (event: MouseEvent) => {
-        this.ocultarTooltip();
-        // Restaurar color original
-        d3.select(event.target as SVGPathElement)
-          .attr('fill', '#3498db');
-      });
+      // Definir una escala de colores para los departamentos
+      const departamentos = [
+        'AltaVerapaz', 'BajaVerapaz', 'Chimaltenango', 'Chiquimula', 'ElProgreso', 'Escuintla',
+        'Guatemala', 'Huehuetenango', 'Izabal', 'Jalapa', 'Jutiapa', 'Petén', 'Quezaltenango',
+        'Quiché', 'Retalhuleu', 'Sacatepéquez', 'SanMarcos', 'SantaRosa', 'Sololá',
+        'Suchitepéquez', 'Totonicapán', 'Zacapa'
+      ];
+        // Usar d3.schemeSet3 para colores variados y agradables
+        // Cambio: Asignar color verde a Petén
+        const customColors = [
+          '#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462',
+          '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#4daf4a', // Petén verde
+          '#ffed6f', '#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00',
+          '#a65628', '#f781bf', '#999999', '#e41a1c'
+        ];
+        const colorScale = d3.scaleOrdinal<string, string>()
+          .domain(departamentos)
+          .range(customColors);
+
+      // Dibujar cada departamento
+      g.selectAll('path')
+        .data(features)
+        .enter()
+        .append('path')
+        .attr('d', this.pathGenerator)
+        .attr('fill', (d: GeoFeature) => colorScale(d.properties.NAME_1))
+        .attr('stroke', '#ffffff') // Borde blanco
+        .attr('stroke-width', 1)
+        .attr('class', 'departamento')
+        .style('cursor', 'pointer')
+        .style('transition', 'fill 0.3s, transform 0.2s')
+        // Evento: al posicionar el cursor sobre un departamento
+        .on('mouseenter', (event: MouseEvent, d: GeoFeature) => {
+          this.mostrarTooltip(event, d);
+          // Cambiar color en hover
+          d3.select(event.target as SVGPathElement)
+            .attr('fill', '#2980b9');
+        })
+        // Evento: al mover el cursor dentro del departamento
+        .on('mousemove', (event: MouseEvent, d: GeoFeature) => {
+          this.actualizarPosicionTooltip(event);
+        })
+        // Evento: al salir el cursor del departamento
+        .on('mouseleave', (event: MouseEvent, d: GeoFeature) => {
+          this.ocultarTooltip();
+          // Restaurar color original según el departamento
+          d3.select(event.target as SVGPathElement)
+            .attr('fill', colorScale(d.properties.NAME_1));
+        });
 
     // Añadir etiquetas de nombres de departamentos
     g.selectAll('text')
@@ -304,11 +323,13 @@ export class MapaComponent implements OnInit, AfterViewInit {
         return coords[1];
       })
       .attr('text-anchor', 'middle')
-      .attr('fill', 'white')
-      .attr('font-size', '10px')
+      .attr('fill', 'black') // Cambio: letras de departamentos en negro
+      // Cambio: ajustar tamaño de fuente dinámicamente según longitud del nombre
+      .attr('font-size', (d: GeoFeature) => d.properties.NAME_1.length > 10 ? '8px' : '10px')
       .attr('font-weight', 'bold')
       .attr('pointer-events', 'none') // Permitir clicks a través del texto
-      .text((d: GeoFeature) => d.properties.NAME_1.substring(0, 8));
+      .text((d: GeoFeature) => d.properties.NAME_1) // Cambio: mostrar nombre completo
+      // Fin de cambio
   }
 
   /**
