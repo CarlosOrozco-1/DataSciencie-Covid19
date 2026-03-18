@@ -1,0 +1,92 @@
+<!-- 
+  Template principal de la aplicación.
+  Dashboard COVID-19 Guatemala.
+-->
+
+<!-- Encabezado de la aplicación -->
+<header class="app-header">
+  <div class="header-content">
+    <h1>🦠 Dashboard COVID-19 Guatemala</h1>
+    <p class="subtitle">Datos oficiales por departamento y municipio</p>
+  </div>
+</header>
+
+<!-- Contenido principal -->
+<main class="app-main">
+  <!-- Sección de estadísticas generales -->
+  <section class="stats-section" *ngIf="!cargando && !error && resumen">
+    <div class="stats-grid">
+      <!-- Tarjeta: Total Confirmados -->
+      <div class="stat-card confirmado">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatearNumero(resumen?.total_confirmados) }}</div>
+          <div class="stat-label">Total Confirmados</div>
+        </div>
+      </div>
+      
+      <!-- Tarjeta: Total Fallecidos -->
+      <div class="stat-card fallecido">
+        <div class="stat-icon">💔</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatearNumero(resumen?.total_fallecidos) }}</div>
+          <div class="stat-label">Total Fallecidos</div>
+        </div>
+      </div>
+      
+      <!-- Tarjeta: Total Tamizados -->
+      <div class="stat-card tamizado">
+        <div class="stat-icon">🧪</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatearNumero(resumen?.total_tamizados) }}</div>
+          <div class="stat-label">Total Tamizados</div>
+        </div>
+      </div>
+      
+      <!-- Tarjeta: Población Total -->
+      <div class="stat-card poblacion">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatearNumero(resumen?.poblacion_total) }}</div>
+          <div class="stat-label">Población Total</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Indicador de carga -->
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div class="error-message" *ngIf="error">
+    <p>⚠️ {{ error }}</p>
+    <p class="hint">Asegúrate de que el backend esté corriendo en http://localhost:8000</p>
+  </div>
+
+  <!-- Mapa de Guatemala -->
+  <section class="map-section" *ngIf="!cargando && !error">
+    <app-mapa></app-mapa>
+  </section>
+
+  <!-- Leyenda del mapa -->
+  <section class="legend-section" *ngIf="!cargando && !error">
+    <div class="legend">
+      <h3>📌 Instrucciones</h3>
+      <ul>
+        <li>Posiciona el cursor sobre un departamento para ver sus datos</li>
+        <li>Los datos se cargan automáticamente desde la API</li>
+        <li>Total de departamentos: {{ resumen?.num_departamentos }}</li>
+        <li>Total de municipios: {{ resumen?.num_municipios }}</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<!-- Pie de página -->
+<footer class="app-footer">
+  <p> Datos del Ministerio de Salud Pública y Asistencia Social de Guatemala</p>
+  <p> Proyecto desarrollado con Python (FastAPI) + Angular + D3.js</p>
+</footer>

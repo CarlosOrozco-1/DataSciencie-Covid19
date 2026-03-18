@@ -1,0 +1,42 @@
+<!-- 
+  Template del componente Mapa.
+  Contenedor principal para el mapa de Guatemala renderizado con D3.js.
+-->
+
+<!-- Contenedor principal del mapa -->
+<div class="mapa-wrapper">
+  <!-- Título del mapa -->
+  <h2 class="mapa-titulo">Mapa de Guatemala - COVID-19 por Departamento</h2>
+  
+  <!-- Contenedor donde D3.js renderiza el SVG del mapa -->
+  <div #mapaContainer class="mapa-container"></div>
+  
+  <!-- Tooltip flotante que muestra datos al posicionar el cursor -->
+  <div 
+    class="tooltip" 
+    *ngIf="tooltipData.visible"
+    [style.left.px]="tooltipData.x"
+    [style.top.px]="tooltipData.y">
+    <div class="tooltip-header">
+      {{ tooltipData.nombre }}
+    </div>
+    <div class="tooltip-body" *ngIf="!tooltipData.loading">
+      <div class="tooltip-row">
+        <span class="tooltip-label">Confirmados:</span>
+        <span class="tooltip-value confirmado">{{ tooltipData.confirmados | number }}</span>
+      </div>
+      <div class="tooltip-row">
+        <span class="tooltip-label">Fallecidos:</span>
+        <span class="tooltip-value fallecido">{{ tooltipData.Fallecidos | number }}</span>
+      </div>
+      <div class="tooltip-row">
+        <span class="tooltip-label">Tamizados:</span>
+        <span class="tooltip-value tamizado">{{ tooltipData.tamizados | number }}</span>
+      </div>
+    </div>
+
+    <div class="tooltip-loading" *ngIf="tooltipData.loading">
+      Cargando datos...
+    </div>
+  </div>
+</div>
