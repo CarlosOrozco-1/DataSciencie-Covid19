@@ -72,8 +72,12 @@ frontend/coverage/
 # -------------------------------
 # Datos grandes/no versionables
 # -------------------------------
-Datos/
-backend/Datos/
+Datos/*
+backend/Datos/*
+!Datos/.gitkeep
+!Datos/README.md
+!backend/Datos/.gitkeep
+!backend/Datos/README.md
 *.csv
 *.xlsx
 *.xls

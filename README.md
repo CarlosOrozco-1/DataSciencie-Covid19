@@ -5,7 +5,7 @@ Dashboard interactivo para visualizar datos de COVID-19 en Guatemala, mostrando 
 
 ## Tecnologías
 - **Backend**: Python 3.x + FastAPI
-- **Frontend**: Angular 17+ (pendiente)
+- **Frontend**: Angular 17+ + D3.js
 - **Datos**: Archivos CSV del Ministerio de Salud de Guatemala
 
 ## Estructura del Proyecto
@@ -23,9 +23,12 @@ proyecto-covid-gt/
 │   │   │   └── resumen.py        # Endpoints de resumen y filtros
 │   │   └── services/
 │   │       └── data_service.py   # Lógica de negocio
-│   ├── Datos/                    # Archivos CSV
+│   ├── Datos/                    # (opcional) archivos CSV locales
 │   └── requirements.txt
-├── frontend/                     # Aplicación Angular (pendiente)
+├── frontend/                     # Aplicación Angular
+├── Datos/                        # Archivos CSV (no versionados)
+├── scripts/
+│   └── verificar_datos.py        # Verifica presencia de fuentes de datos
 ├── README.md
 └── AGENTS.md
 ```
@@ -47,6 +50,15 @@ proyecto-covid-gt/
 - **Fallecidos** por municipio
 - **Tamizados** por municipio (múltiples fechas)
 
+### Importante para colaboración en GitHub
+- La carpeta `Datos/` **no se sube** al repositorio (está en `.gitignore`).
+- Cada colaborador debe copiar localmente los archivos CSV a `Datos/`.
+- Para validar que todo está completo, ejecutar:
+
+```bash
+python scripts/verificar_datos.py
+```
+
 ## Ejecutar el Proyecto
 
 ### Backend (en distrobox)
@@ -62,7 +74,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 - Si aparece `uvicorn: command not found`, activa el entorno con `source venv/bin/activate` o ejecuta el binario directo: `venv/bin/uvicorn`.
 - En otro equipo con instalación global de paquetes Python, este problema puede no ocurrir, pero se recomienda usar `venv` para mantener dependencias aisladas y reproducibles.
 
-### Frontend (pendiente)
+### Frontend
 ```bash
 cd frontend
 npm install
@@ -75,6 +87,7 @@ Una vez ejecutando el backend, visita: `http://localhost:8000/docs`
 ## Fase Actual
 - ✅ Fase 0: Configuración del entorno
 - ✅ Fase 1: Backend (FastAPI) - COMPLETO
+- ✅ Fase 2: Frontend (Angular + D3) - EN PROGRESO
 
 ## Licencia
 MIT
