@@ -172,6 +172,35 @@ ng serve
 - Integración con D3.js
 - Tooltip interactivo al posicionar cursor sobre departamentos
 - Consumo de APIs del backend
+- Dashboard ESAVI con gráficas interactivas D3.js (barras y pastel)
+
+## Cambios Recientes
+
+### Mejora del Dashboard ESAVI (Última actualización)
+1. **esavi-page.component.ts**: 
+   - Implementados métodos privados `dibujarGraficas()`, `dibujarGraficaSexo()`, `dibujarGraficaEtario()`, `dibujarGraficaClasificacion()`
+   - Agregados ViewChild decoradores para referencias a elementos del DOM (#grafica_sexo, #grafica_etario, #grafica_clasificacion)
+   - Implementado lifecycle hook `ngAfterViewInit()` para dibujar gráficas post-render
+   - Extracción dinámica de opciones de filtro desde datos API (sexosDisponibles, gruposEtariosDisponibles, areasSaludDisponibles)
+
+2. **esavi-page.component.html**:
+   - Agregada sección `.graficas-section` con contenedores para 3 gráficas D3.js
+   - Grid responsivo con gráficas apiladas en móvil
+
+3. **esavi-page.component.css**:
+   - Nuevos estilos para `.graficas-grid`, `.grafica-container`
+   - Responsividad con media queries para dispositivos móviles
+   - Animaciones suaves en hover para elementos interactivos
+
+4. **Mapa de Guatemala (mapa.component.ts)**:
+   - Colores dinámicos asignados a 22 departamentos (d3.scaleOrdinal + d3.schemeSet3)
+   - Peténes especialmente coloreado en verde (#4daf4a)
+   - Nombres completos mostrados (sin truncamiento, dynamic font-sizing)
+   - Labels en negro (#000000) para mejor contraste
+
+5. **Backend (data_service.py)**:
+   - Filtro de registros válidos aplicado antes de contar en obtener_resumen_nacional()
+   - Corrige count discrepancies: 22 departamentos, 340 municipios
 
 
 ## Notas Importantes

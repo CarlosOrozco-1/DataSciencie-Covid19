@@ -210,6 +210,52 @@
   padding: 14px;
 }
 
+/**
+ * Cambio: Estilos para las gráficas D3.js interactivas.
+ * Las gráficas se disponen en un grid responsivo con sombra.
+ */
+.graficas-section {
+  width: 100%;
+}
+
+.graficas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.grafica-container {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+/* Estilos de ejes y textos en gráficas D3.js */
+.grafica-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.grafica-container svg text {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+/* Animaciones suaves al interactuar con barras */
+.grafica-container svg rect {
+  transition: opacity 0.2s ease;
+}
+
+.grafica-container svg path {
+  transition: opacity 0.2s ease;
+}
+
 @media (max-width: 768px) {
   .esavi-columns {
     grid-template-columns: 1fr;
@@ -217,5 +263,9 @@
 
   .filtro-actions {
     align-items: stretch;
+  }
+
+  .graficas-grid {
+    grid-template-columns: 1fr;
   }
 }

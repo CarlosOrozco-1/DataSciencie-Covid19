@@ -1,0 +1,119 @@
+<!--
+  Componente ESAVI - Dashboard de eventos adversos de vacunación.
+  Muestra tarjetas de resumen y gráficas interactivas de datos ESAVI.
+-->
+
+<!-- Indicador de carga -->
+<div class="loading" *ngIf="cargando">
+  <div class="spinner"></div>
+  <p>Cargando datos ESAVI...</p>
+</div>
+
+<!-- Mensaje de error -->
+<div class="error-message" *ngIf="error">
+  <p>⚠️ {{ error }}</p>
+</div>
+
+<!-- Contenido principal -->
+<div class="esavi-container" *ngIf="!cargando && !error && resumen">
+  <!-- Sección de estadísticas generales -->
+  <section class="stats-section">
+    <h2>📊 Resumen ESAVI - Eventos Adversos de Vacunación</h2>
+    
+    <div class="stats-grid">
+      <!-- Tarjeta: Total de registros -->
+      <div class="stat-card total">
+        <div class="stat-icon">📋</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatearNumero(resumen.total_registros) }}</div>
+          <div class="stat-label">Total de Eventos</div>
+        </div>
+      </div>
+
+      <!-- Tarjeta: Casos graves -->
+      <div class="stat-card grave">
+        <div class="stat-icon">🔴</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatearNumero(resumen.total_graves) }}</div>
+          <div class="stat-label">Eventos Graves</div>
+          <div class="stat-percentage">
+            {{ ((resumen.total_graves / resumen.total_registros) * 100).toFixed(1) }}%
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjeta: Casos no graves -->
+      <div class="stat-card no-grave">
+        <div class="stat-icon">🟢</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatearNumero(resumen.total_no_graves) }}</div>
+          <div class="stat-label">Eventos No Graves</div>
+          <div class="stat-percentage">
+            {{ ((resumen.total_no_graves / resumen.total_registros) * 100).toFixed(1) }}%
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de gráficas -->
+  <section class="graficas-section">
+    <h3>📈 Análisis Detallado</h3>
+    
+    <div class="graficas-grid">
+      <!-- Gráfica: Distribución por sexo -->
+      <div class="grafica-container">
+        <div #grafica_sexo class="grafica"></div>
+        <!-- Cambio: Agregar leyenda para sexo -->
+        <div class="leyenda">
+          <div class="leyenda-item">
+            <span class="color-box" style="background-color: #ff6b9d;"></span>
+            <span>Femenino</span>
+          </div>
+          <div class="leyenda-item">
+            <span class="color-box" style="background-color: #4dabf7;"></span>
+            <span>Masculino</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfica: Distribución por grupo etario -->
+      <div class="grafica-container">
+        <div #grafica_etario class="grafica"></div>
+      </div>
+
+      <!-- Gráfica: Clasificación (Grave vs No Grave) -->
+      <div class="grafica-container">
+        <div #grafica_clasificacion class="grafica"></div>
+        <!-- Cambio: Agregar leyenda para clasificación -->
+        <div class="leyenda">
+          <div class="leyenda-item">
+            <span class="color-box" style="background-color: #ff6b6b;"></span>
+            <span>Grave</span>
+          </div>
+          <div class="leyenda-item">
+            <span class="color-box" style="background-color: #51cf66;"></span>
+            <span>No Grave</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfica: Distribución por área de salud -->
+      <div class="grafica-container">
+        <div #grafica_area class="grafica"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nota informativa -->
+  <section class="info-section">
+    <div class="info-box">
+      <h4>ℹ️ Información</h4>
+      <p>
+        Los datos ESAVI (Eventos Supuestamente Atribuibles a la Vacunación o Inmunización) 
+        son reportados por el Ministerio de Salud Pública y Asistencia Social de Guatemala.
+        Esta información es actualizada periódicamente según la base de datos oficial.
+      </p>
+    </div>
+  </section>
+</div>
