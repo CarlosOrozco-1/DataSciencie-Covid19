@@ -300,31 +300,34 @@ class DataService:
         df_confirmados = self._obtener_dataframe("confirmados_emision")
         df_fallecidos = self._obtener_dataframe("fallecidos")
         df_tamizados = self._obtener_dataframe("tamizados_emision")
-        
+
         if df_confirmados is None:
             return {}
-        
+
+        # Aplicar filtro de registros válidos para evitar conteo incorrecto
+        df_confirmados = self._filtrar_registros_validos(df_confirmados)  # Cambio aplicado: filtrar antes de contar
+
         # Calcular totales
         columnas_fecha = [col for col in df_confirmados.columns if col.startswith("20") or col.startswith("19")]
         total_confirmados = df_confirmados[columnas_fecha].sum().sum()
-        
+
         total_fallecidos = 0
         if df_fallecidos is not None:
             columnas_fecha_fall = [col for col in df_fallecidos.columns if col.startswith("20") or col.startswith("19")]
             total_fallecidos = df_fallecidos[columnas_fecha_fall].sum().sum()
-        
+
         total_tamizados = 0
         if df_tamizados is not None:
             columnas_fecha_tam = [col for col in df_tamizados.columns if col.startswith("20") or col.startswith("19")]
             total_tamizados = df_tamizados[columnas_fecha_tam].sum().sum()
-        
+
         # Población total
         poblacion_total = df_confirmados["poblacion"].sum()
-        
-        # Número de departamentos y municipios
+
+        # Número de departamentos y municipios (ya filtrados)
         num_departamentos = df_confirmados["codigo_departamento"].nunique()
         num_municipios = df_confirmados["codigo_municipio"].nunique()
-        
+
         # Obtener lista de departamentos
         departamentos = self.obtener_lista_departamentos()
         
