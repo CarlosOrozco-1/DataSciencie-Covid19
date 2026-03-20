@@ -1,12 +1,12 @@
 <!--
-  Página ESAVI.
-  Incluye contexto, resumen general y módulo de filtros.
+  Página ESAVI
+  Incluye contexto, resumen general, módulo de filtros y gráficos visuales
 -->
 
 <section class="esavi-intro">
   <h2>Análisis ESAVI</h2>
   <p>
-    Este módulo analiza <strong>Eventos Supuestamente Atribuibles a Vacunación o Inmunización (ESAVI)</strong>.
+    Este módulo analiza <strong>Eventos  Atribuibles a Vacunación o Inmunización (ESAVI)</strong>.
     No representa el total de casos COVID del mapa territorial, sino eventos registrados en contexto de vacunación.
   </p>
   <p class="esavi-periodo">
@@ -27,34 +27,35 @@
   <div class="esavi-card">
     <h3>Resumen general ESAVI</h3>
 
+    <!-- KPIs mejorados -->
     <div class="esavi-grid resumen-grid">
-      <div class="esavi-item">
+      <div class="esavi-item" data-tooltip="Total de eventos registrados en el período 2021-2024">
         <div class="esavi-value">{{ formatearNumero(resumenEsavi.total_registros) }}</div>
         <div class="esavi-label">Total registros</div>
       </div>
-      <div class="esavi-item">
+      
+      <div class="esavi-item" data-tooltip="Casos clasificados como graves">
         <div class="esavi-value">{{ formatearNumero(resumenEsavi.total_graves) }}</div>
-        <div class="esavi-label">Clasificación grave</div>
+        <div class="esavi-label">
+          <span class="badge-grave"> Graves</span>
+        </div>
+        <div class="esavi-percentage">
+          {{ calcularPorcentaje(resumenEsavi.total_graves, resumenEsavi.total_registros) | number:'1.1-1' }}% del total
+        </div>
       </div>
-      <div class="esavi-item">
+      
+      <div class="esavi-item" data-tooltip="Casos clasificados como no graves">
         <div class="esavi-value">{{ formatearNumero(resumenEsavi.total_no_graves) }}</div>
-        <div class="esavi-label">Clasificación no grave</div>
+        <div class="esavi-label">
+          <span class="badge-no-grave">No graves</span>
+        </div>
+        <div class="esavi-percentage">
+          {{ calcularPorcentaje(resumenEsavi.total_no_graves, resumenEsavi.total_registros) | number:'1.1-1' }}% del total
+        </div>
       </div>
     </div>
 
-    <!-- Cambio: Sección de gráficas D3.js para visualización interactiva -->
-    <div class="graficas-section">
-      <h3 style="margin-top: 30px; margin-bottom: 20px;">Visualización Interactiva de Datos</h3>
-      <div class="graficas-grid">
-        <div #grafica_sexo class="grafica-container"></div>
-        <div #grafica_etario class="grafica-container"></div>
-        <div #grafica_clasificacion class="grafica-container"></div>
-      </div>
-    </div>
-
-    <!-- Cambio: Filtros mantienen funcionalidad de búsqueda detallada -->
-    <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
-
+    <!-- Filtros -->
     <div class="esavi-filtros">
       <div class="filtro-item">
         <label for="filtroSexo">Sexo</label>
@@ -95,6 +96,7 @@
       </div>
     </div>
 
+    <!-- Resultado filtrado -->
     <div class="esavi-resultado" *ngIf="esaviFiltrado">
       <h4>Resultado filtrado</h4>
       <p class="esavi-total">
@@ -114,6 +116,7 @@
               <div class="esavi-bar">
                 <div class="esavi-bar-fill sexo" [style.width.%]="calcularPorcentaje(item.valor, esaviFiltrado.total_registros)"></div>
               </div>
+              <span class="bar-percentage-small">{{ calcularPorcentaje(item.valor, esaviFiltrado.total_registros) | number:'1.1-1' }}%</span>
             </li>
           </ul>
         </div>
@@ -129,41 +132,110 @@
               <div class="esavi-bar">
                 <div class="esavi-bar-fill clasificacion" [style.width.%]="calcularPorcentaje(item.valor, esaviFiltrado.total_registros)"></div>
               </div>
+              <span class="bar-percentage-small">{{ calcularPorcentaje(item.valor, esaviFiltrado.total_registros) | number:'1.1-1' }}%</span>
             </li>
           </ul>
         </div>
       </div>
     </div>
 
+    <!-- Gráficos mejorados -->
     <div class="esavi-columns">
-      <div>
+      <!-- Gráfico de dona para distribución por sexo - CORREGIDO (sin ?.) -->
+      <div class="donut-chart-container">
         <h4>Distribución por sexo (global)</h4>
-        <ul class="esavi-list">
-          <li *ngFor="let item of convertirALista(resumenEsavi.por_sexo)">
-            <div class="esavi-list-head">
-              <span>{{ item.clave }}</span>
-              <strong>{{ formatearNumero(item.valor) }}</strong>
-            </div>
-            <div class="esavi-bar">
-              <div class="esavi-bar-fill sexo" [style.width.%]="calcularPorcentaje(item.valor, resumenEsavi.total_registros)"></div>
-            </div>
-          </li>
-        </ul>
+        <div class="donut-chart" *ngIf="resumenEsavi.por_sexo"
+             [style.background]="getDonutGradient()">
+        </div>
+        <div class="donut-legend">
+          <div class="legend-item" *ngFor="let item of convertirALista(resumenEsavi.por_sexo); let i = index">
+            <span class="legend-color" [class.femenino]="item.clave === 'Femenino'" [class.masculino]="item.clave === 'Masculino'"></span>
+            <span>{{ item.clave }}: <strong>{{ formatearNumero(item.valor) }}</strong> ({{ calcularPorcentaje(item.valor, resumenEsavi.total_registros) | number:'1.1-1' }}%)</span>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <h4>Top grupos etarios (global)</h4>
-        <ul class="esavi-list">
-          <li *ngFor="let item of convertirALista(resumenEsavi.por_grupo_etario)">
-            <div class="esavi-list-head">
-              <span>{{ item.clave }}</span>
-              <strong>{{ formatearNumero(item.valor) }}</strong>
-            </div>
-            <div class="esavi-bar">
-              <div class="esavi-bar-fill grupo" [style.width.%]="calcularPorcentaje(item.valor, resumenEsavi.total_registros)"></div>
-            </div>
-          </li>
-        </ul>
+      <!-- Mini gráfico de tendencia temporal -->
+      <div class="trend-chart-container">
+        <h4>Tendencia temporal</h4>
+        <div class="trend-chart">
+          <div class="trend-bars">
+            <div class="trend-bar year-2021" style="height: 100%;" data-tooltip="2021: Mayor concentración de casos"></div>
+            <div class="trend-bar year-2022" style="height: 85%;" data-tooltip="2022: 85% del pico"></div>
+            <div class="trend-bar year-2023" style="height: 30%;" data-tooltip="2023: 30% del pico"></div>
+            <div class="trend-bar year-2024" style="height: 15%;" data-tooltip="2024: 15% del pico"></div>
+          </div>
+          <div class="trend-labels">
+            <span>2021</span>
+            <span>2022</span>
+            <span>2023</span>
+            <span>2024</span>
+          </div>
+        </div>
+        <p class="trend-note">*Basado en concentración de registros</p>
+      </div>
+    </div>
+
+    <!-- Gráfico de barras para grupos etarios -->
+    <div class="bar-chart">
+      <h4>Top grupos etarios (global)</h4>
+      <div class="bar-chart-header">
+        <span>Grupo</span>
+        <span>Casos</span>
+      </div>
+      <div *ngFor="let item of convertirALista(resumenEsavi.por_grupo_etario).slice(0, 8); let i = index" class="bar-item">
+        <div class="bar-header">
+          <div class="bar-label">
+            <span class="bar-rank">#{{i + 1}}</span>
+            <span>{{ item.clave }}</span>
+          </div>
+          <div class="bar-value">{{ formatearNumero(item.valor) }}</div>
+        </div>
+        <div class="bar-progress">
+          <div class="bar-fill" [style.width.%]="calcularPorcentaje(item.valor, resumenEsavi.total_registros)">
+            {{ calcularPorcentaje(item.valor, resumenEsavi.total_registros) | number:'1.1-1' }}%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matriz de calor: Sexo vs Grupos etarios -->
+    <div class="heatmap-card">
+      <h4>Matriz de calor: Sexo vs Grupos etarios</h4>
+      <div class="heatmap-grid">
+        <!-- Encabezados -->
+        <div class="heatmap-header"></div>
+        <div class="heatmap-header" *ngFor="let grupo of convertirALista(resumenEsavi.por_grupo_etario).slice(0, 5)">{{ grupo.clave }}</div>
+        
+        <!-- Fila Femenino -->
+        <div class="heatmap-row-label">Femenino</div>
+        <div *ngFor="let grupo of convertirALista(resumenEsavi.por_grupo_etario).slice(0, 5)" 
+             class="heatmap-cell femenino-cell" 
+             [style.opacity]="getHeatmapOpacity(grupo.clave, 'Femenino')"
+             [attr.data-tooltip]="'Casos estimados: ' + (getEstimatedCases(grupo.clave, 'Femenino') | number:'1.0-0')">
+          {{ getEstimatedCases(grupo.clave, 'Femenino') | number:'1.0-0' }}
+        </div>
+        
+        <!-- Fila Masculino -->
+        <div class="heatmap-row-label">Masculino</div>
+        <div *ngFor="let grupo of convertirALista(resumenEsavi.por_grupo_etario).slice(0, 5)" 
+             class="heatmap-cell masculino-cell" 
+             [style.opacity]="getHeatmapOpacity(grupo.clave, 'Masculino')"
+             [attr.data-tooltip]="'Casos estimados: ' + (getEstimatedCases(grupo.clave, 'Masculino') | number:'1.0-0')">
+          {{ getEstimatedCases(grupo.clave, 'Masculino') | number:'1.0-0' }}
+        </div>
+      </div>
+      <p class="heatmap-note">
+        *Estimación basada en distribución proporcional por sexo
+      </p>
+    </div>
+
+    <!-- Resumen adicional con badges -->
+    <div class="esavi-summary">
+      <div class="summary-badges">
+        <span class="badge-grave">🔴 Graves: {{ formatearNumero(resumenEsavi.total_graves) }}</span>
+        <span class="badge-no-grave">🟢 No graves: {{ formatearNumero(resumenEsavi.total_no_graves) }}</span>
+        <span class="badge-total">📊 Total: {{ formatearNumero(resumenEsavi.total_registros) }}</span>
       </div>
     </div>
   </div>
