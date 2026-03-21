@@ -1,0 +1,271 @@
+{
+  "info": {
+    "name": "COVID Guatemala API",
+    "description": "Coleccion para probar endpoints del backend COVID-19 Guatemala (incluye ESAVI).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "a6b785f8-4a47-4c65-a9d0-dae6e1cd9b94"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "codigoDepartamento",
+      "value": "1"
+    },
+    {
+      "key": "codigoMunicipio",
+      "value": "101"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Root",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "Departamentos - Lista",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/departamentos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "departamentos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Departamentos - Detalle",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/departamentos/{{codigoDepartamento}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "departamentos",
+            "{{codigoDepartamento}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Departamentos - Municipios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/departamentos/{{codigoDepartamento}}/municipios",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "departamentos",
+            "{{codigoDepartamento}}",
+            "municipios"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Municipios - Lista",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/municipios",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "municipios"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Municipios - Detalle",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/municipios/{{codigoMunicipio}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "municipios",
+            "{{codigoMunicipio}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Resumen Nacional",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/resumen",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "resumen"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Filtrar COVID (ejemplo)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/filtrar?departamento={{codigoDepartamento}}&fecha_inicio=2024-01-01&fecha_fin=2024-12-31",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "filtrar"
+          ],
+          "query": [
+            {
+              "key": "departamento",
+              "value": "{{codigoDepartamento}}"
+            },
+            {
+              "key": "fecha_inicio",
+              "value": "2024-01-01"
+            },
+            {
+              "key": "fecha_fin",
+              "value": "2024-12-31"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "ESAVI - Resumen",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/esavi/resumen",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "esavi",
+            "resumen"
+          ]
+        }
+      }
+    },
+    {
+      "name": "ESAVI - Filtrar por Sexo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/esavi/filtrar?sexo=Masculino",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "esavi",
+            "filtrar"
+          ],
+          "query": [
+            {
+              "key": "sexo",
+              "value": "Masculino"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "ESAVI - Filtrar Completo (ejemplo)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/esavi/filtrar?sexo=Femenino&grupo_etario=30-39&clasificacion=NO%20GRAVE&area_salud=GUATEMALA%20CENTRAL",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "esavi",
+            "filtrar"
+          ],
+          "query": [
+            {
+              "key": "sexo",
+              "value": "Femenino"
+            },
+            {
+              "key": "grupo_etario",
+              "value": "30-39"
+            },
+            {
+              "key": "clasificacion",
+              "value": "NO GRAVE"
+            },
+            {
+              "key": "area_salud",
+              "value": "GUATEMALA CENTRAL"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

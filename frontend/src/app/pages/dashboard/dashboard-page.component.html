@@ -7,7 +7,7 @@
 <section class="stats-section" *ngIf="!cargando && !error && resumen">
   <div class="stats-grid">
     <div class="stat-card confirmado">
-      <div class="stat-icon">📊</div>
+      <div class="stat-icon">📈</div>
       <div class="stat-content">
         <div class="stat-value">{{ formatearNumero(resumen.total_confirmados) }}</div>
         <div class="stat-label">Total Confirmados</div>
@@ -15,7 +15,7 @@
     </div>
 
     <div class="stat-card fallecido">
-      <div class="stat-icon">💔</div>
+      <div class="stat-icon">❤️</div>
       <div class="stat-content">
         <div class="stat-value">{{ formatearNumero(resumen.total_fallecidos) }}</div>
         <div class="stat-label">Total Fallecidos</div>
@@ -23,7 +23,7 @@
     </div>
 
     <div class="stat-card tamizado">
-      <div class="stat-icon">🧪</div>
+      <div class="stat-icon">🧬</div>
       <div class="stat-content">
         <div class="stat-value">{{ formatearNumero(resumen.total_tamizados) }}</div>
         <div class="stat-label">Total Tamizados</div>
@@ -31,7 +31,7 @@
     </div>
 
     <div class="stat-card poblacion">
-      <div class="stat-icon">👥</div>
+      <div class="stat-icon">🏘️</div>
       <div class="stat-content">
         <div class="stat-value">{{ formatearNumero(resumen.poblacion_total) }}</div>
         <div class="stat-label">Población Total</div>

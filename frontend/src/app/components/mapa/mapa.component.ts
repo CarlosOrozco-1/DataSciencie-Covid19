@@ -105,12 +105,12 @@ export class MapaComponent implements OnInit, AfterViewInit {
   /**
    * Ancho del SVG del mapa.
    */
-  private width: number = 800;
+  private width: number = 1800;
 
   /**
    * Alto del SVG del mapa.
    */
-  private height: number = 600;
+  private height: number = 1600;
 
   /**
    * Proyección geográfica para Guatemala.
@@ -324,12 +324,39 @@ export class MapaComponent implements OnInit, AfterViewInit {
       })
       .attr('text-anchor', 'middle')
       .attr('fill', 'black') // Cambio: letras de departamentos en negro
-      // Cambio: ajustar tamaño de fuente dinámicamente según longitud del nombre
-      .attr('font-size', (d: GeoFeature) => d.properties.NAME_1.length > 10 ? '8px' : '10px')
+      // Ajustar tamaño de fuente según tamano del departamento y escala del mapa
+      .attr('font-size', (d: GeoFeature) => `${this.calcularTamanoEtiqueta(d)}px`)
       .attr('font-weight', 'bold')
       .attr('pointer-events', 'none') // Permitir clicks a través del texto
       .text((d: GeoFeature) => d.properties.NAME_1) // Cambio: mostrar nombre completo
       // Fin de cambio
+  }
+
+  /**
+   * Calcula un tamaño de fuente proporcional al tamaño del departamento.
+   * Escala la tipografía cuando cambia el viewBox del mapa.
+   *
+   * @param feature - Feature GeoJSON del departamento
+   * @returns Tamaño de fuente en px para el label
+   */
+  private calcularTamanoEtiqueta(feature: GeoFeature): number {
+    const [inicio, fin] = this.pathGenerator.bounds(feature);
+    const anchoDepartamento = Math.max(1, fin[0] - inicio[0]);
+    const altoDepartamento = Math.max(1, fin[1] - inicio[1]);
+    const nombre = feature.properties.NAME_1 || '';
+
+    // Relación de escala frente al tamaño base original del mapa (800x600)
+    const factorEscala = Math.min(this.width / 800, this.height / 600);
+
+    // Aproximación del ancho ocupado por texto para evitar desborde.
+    const ajustePorAncho = anchoDepartamento / Math.max(nombre.length * 0.66, 1);
+    const ajustePorAlto = altoDepartamento * 0.33;
+    const sugerido = Math.min(ajustePorAncho, ajustePorAlto);
+
+    const minimo = 7 * factorEscala;
+    const maximo = 13 * factorEscala;
+
+    return Math.round(Math.max(minimo, Math.min(maximo, sugerido)));
   }
 
   /**

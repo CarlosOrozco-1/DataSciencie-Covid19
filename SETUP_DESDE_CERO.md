@@ -30,15 +30,17 @@ Validar presencia de archivos:
 python scripts/verificar_datos.py
 ```
 
-## 3) Levantar backend (FastAPI)
+## 3) Levantar backend (FastAPI) Nota ( Tener instalado python verificar version) python --version
 
 ```bash
 cd backend
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  (linuex)
+source venv/Scripts/activate(windows)
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
+
+ruta directa en Windows (.\venv\Scripts\uvicorn.exe app.main:app --host 0.0.0.0 --port 8000 --reload)
 
 ### Nota sobre distrobox
 

@@ -30,7 +30,14 @@
 .stat-icon {
   font-size: 36px;
   margin-right: 12px;
+  line-height: 1;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
 }
+
+.stat-card.confirmado .stat-icon { color: #e74c3c; }
+.stat-card.fallecido .stat-icon { color: #d63031; }
+.stat-card.tamizado .stat-icon { color: #27ae60; }
+.stat-card.poblacion .stat-icon { color: #2d8ed6; }
 
 .stat-value {
   font-size: 26px;

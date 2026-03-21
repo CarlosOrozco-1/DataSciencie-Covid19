@@ -12,7 +12,7 @@ pydantic==2.5.3
 pandas==2.2.0
 
 # Lectura de archivos Excel (por si se necesita)
-openpyxl==3.1.2
+openpyxl==3.1.5
 
 # Python-dotenv para variables de entorno
 python-dotenv==1.0.0
