@@ -4,7 +4,7 @@
  * Permite interacción al posicionar el cursor para mostrar datos de COVID-19.
  */
 
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as d3 from 'd3';
 import { CovidService } from '../../services/covid/covid.service';
@@ -68,6 +68,9 @@ const MAPEO_DEPARTAMENTOS: { [key: string]: number } = {
 export class MapaComponent implements OnInit, AfterViewInit {
   // Referencia al elemento DOM del contenedor del mapa
   @ViewChild('mapaContainer', { static: true }) mapaContainer!: ElementRef;
+
+  // Evento que notifica al contenedor cuando se selecciona un departamento.
+  @Output() departamentoSeleccionado = new EventEmitter<DatosDepartamento>();
 
   /**
    * Datos de los departamentos cargados desde la API.
@@ -175,9 +178,22 @@ export class MapaComponent implements OnInit, AfterViewInit {
    * 
    * @param codigo - Código numérico del departamento
    */
-  private cargarDepartamentoPorCodigo(codigo: number): void {
+  private cargarDepartamentoPorCodigo(
+    codigo: number,
+    onLoaded?: (datos: DatosDepartamento) => void
+  ): void {
     // Si ya está en caché o en proceso de carga, no repetir petición.
-    if (this.datosDepartamentos.has(codigo) || this.departamentosEnCarga.has(codigo)) {
+    if (this.datosDepartamentos.has(codigo)) {
+      if (onLoaded) {
+        const datos = this.datosDepartamentos.get(codigo);
+        if (datos) {
+          onLoaded(datos);
+        }
+      }
+      return;
+    }
+
+    if (this.departamentosEnCarga.has(codigo)) {
       return;
     }
 
@@ -186,6 +202,10 @@ export class MapaComponent implements OnInit, AfterViewInit {
     this.covidService.obtenerDepartamento(codigo).subscribe({
       next: (datos) => {
         this.datosDepartamentos.set(codigo, datos);
+
+        if (onLoaded) {
+          onLoaded(datos);
+        }
 
         // Si el tooltip visible corresponde a este departamento, actualizar en caliente.
         if (this.tooltipData.visible && this.tooltipData.codigo === codigo) {
@@ -307,6 +327,10 @@ export class MapaComponent implements OnInit, AfterViewInit {
           // Restaurar color original según el departamento
           d3.select(event.target as SVGPathElement)
             .attr('fill', colorScale(d.properties.NAME_1));
+        })
+        // Evento: seleccionar departamento para mostrar panel de detalle
+        .on('click', (_event: MouseEvent, d: GeoFeature) => {
+          this.seleccionarDepartamento(d);
         });
 
     // Añadir etiquetas de nombres de departamentos
@@ -330,6 +354,30 @@ export class MapaComponent implements OnInit, AfterViewInit {
       .attr('pointer-events', 'none') // Permitir clicks a través del texto
       .text((d: GeoFeature) => d.properties.NAME_1) // Cambio: mostrar nombre completo
       // Fin de cambio
+  }
+
+  /**
+   * Selecciona un departamento y emite sus datos para panel de detalle.
+   *
+   * @param d - Característica GeoJSON del departamento seleccionado
+   */
+  private seleccionarDepartamento(d: GeoFeature): void {
+    const nombreDepto = d.properties.NAME_1;
+    const codigo = MAPEO_DEPARTAMENTOS[nombreDepto] || 0;
+
+    if (!codigo) {
+      return;
+    }
+
+    const datosEnCache = this.datosDepartamentos.get(codigo);
+    if (datosEnCache) {
+      this.departamentoSeleccionado.emit(datosEnCache);
+      return;
+    }
+
+    this.cargarDepartamentoPorCodigo(codigo, (datos) => {
+      this.departamentoSeleccionado.emit(datos);
+    });
   }
 
   /**

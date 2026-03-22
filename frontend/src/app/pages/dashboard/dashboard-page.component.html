@@ -53,8 +53,32 @@
 
 <!-- Mapa de Guatemala -->
 <section class="map-section" *ngIf="!cargando && !error">
-  <app-mapa></app-mapa>
+  <app-mapa (departamentoSeleccionado)="onDepartamentoSeleccionado($event)"></app-mapa>
 </section>
+
+<!-- Panel lateral de detalle por departamento -->
+<div class="slide-layout" *ngIf="!cargando && !error">
+  <aside class="slide-panel" [class.abierta]="departamentoSeleccionado !== null">
+    <button
+      type="button"
+      class="slide-close"
+      (click)="cerrarPanelDetalle()"
+      *ngIf="departamentoSeleccionado"
+      aria-label="Cerrar panel de detalle">
+      ×
+    </button>
+
+    <div class="slide-placeholder" *ngIf="!departamentoSeleccionado">
+      <h4>Detalle por departamento</h4>
+      <p>Haz clic en un departamento del mapa para abrir este panel con datos y gráfica.</p>
+    </div>
+
+    <app-departamento-detalle
+      *ngIf="departamentoSeleccionado"
+      [datos]="departamentoSeleccionado">
+    </app-departamento-detalle>
+  </aside>
+</div>
 
 <!-- Leyenda del mapa -->
 <section class="legend-section" *ngIf="!cargando && !error && resumen">
@@ -62,6 +86,7 @@
     <h3>📌 Instrucciones</h3>
     <ul>
       <li>Posiciona el cursor sobre un departamento para ver sus datos</li>
+      <li>Haz clic en un departamento para abrir su panel con gráfica</li>
       <li>Los datos se cargan automáticamente desde la API</li>
       <li>Total de departamentos: {{ resumen.num_departamentos }}</li>
       <li>Total de municipios: {{ resumen.num_municipios }}</li>

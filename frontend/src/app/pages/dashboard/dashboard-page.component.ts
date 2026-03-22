@@ -7,12 +7,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MapaComponent } from '../../components/mapa/mapa.component';
 import { CovidService } from '../../services/covid/covid.service';
-import { ResumenNacional } from '../../models/covid.models';
+import { ResumenNacional, DatosDepartamento } from '../../models/covid.models';
+import { DepartamentoDetalleComponent } from '../../components/departamento-detalle/departamento-detalle.component';
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CommonModule, MapaComponent],
+  imports: [CommonModule, MapaComponent, DepartamentoDetalleComponent],
   templateUrl: './dashboard-page.component.html',
   styleUrls: ['./dashboard-page.component.css']
 })
@@ -33,6 +34,11 @@ export class DashboardPageComponent implements OnInit {
   error: string | null = null;
 
   /**
+   * Departamento seleccionado desde el mapa.
+   */
+  departamentoSeleccionado: DatosDepartamento | null = null;
+
+  /**
    * Constructor con inyección del servicio de API.
    *
    * @param covidService - Servicio para consumo de endpoints COVID
@@ -44,6 +50,20 @@ export class DashboardPageComponent implements OnInit {
    */
   ngOnInit(): void {
     this.cargarResumen();
+  }
+
+  /**
+   * Maneja la selección desde el mapa para mostrar panel de detalle.
+   */
+  onDepartamentoSeleccionado(datos: DatosDepartamento): void {
+    this.departamentoSeleccionado = datos;
+  }
+
+  /**
+   * Cierra el panel lateral de detalle.
+   */
+  cerrarPanelDetalle(): void {
+    this.departamentoSeleccionado = null;
   }
 
   /**

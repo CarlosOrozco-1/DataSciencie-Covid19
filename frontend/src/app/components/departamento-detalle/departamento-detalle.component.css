@@ -1,0 +1,100 @@
+.detalle-panel {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8edf2;
+}
+
+.detalle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.detalle-header h3 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.detalle-header p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.pill {
+  background: #edf6ff;
+  color: #1f4e79;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.mini-card {
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.mini-card strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.mini-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.mini-card.confirmado { border-left: 4px solid #e74c3c; }
+.mini-card.fallecido { border-left: 4px solid #8e44ad; }
+.mini-card.tamizado { border-left: 4px solid #27ae60; }
+.mini-card.poblacion { border-left: 4px solid #3498db; }
+
+.grafica-panel h4 {
+  margin: 0 0 10px;
+  color: #1f2937;
+}
+
+.barra-item {
+  margin-bottom: 10px;
+}
+
+.barra-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #334155;
+  margin-bottom: 4px;
+}
+
+.barra-track {
+  width: 100%;
+  height: 12px;
+  border-radius: 8px;
+  background: #e8edf2;
+  overflow: hidden;
+}
+
+.barra-fill {
+  height: 100%;
+  border-radius: 8px;
+}
+
+.barra-fill.confirmado { background: linear-gradient(90deg, #f06a5d, #e74c3c); }
+.barra-fill.fallecido { background: linear-gradient(90deg, #a663d0, #8e44ad); }
+.barra-fill.tamizado { background: linear-gradient(90deg, #3ac47a, #27ae60); }

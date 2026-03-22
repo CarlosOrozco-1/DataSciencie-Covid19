@@ -1,0 +1,41 @@
+<section class="detalle-panel" *ngIf="datos">
+  <div class="detalle-header">
+    <div>
+      <h3>{{ datos.departamento }}</h3>
+      <p>Código: {{ datos.codigo_departamento }}</p>
+    </div>
+    <div class="pill">{{ datos.municipios.length }} municipios</div>
+  </div>
+
+  <div class="detalle-grid">
+    <div class="mini-card confirmado">
+      <span class="mini-label">Confirmados</span>
+      <strong>{{ formatearNumero(datos.total_confirmados) }}</strong>
+    </div>
+    <div class="mini-card fallecido">
+      <span class="mini-label">Fallecidos</span>
+      <strong>{{ formatearNumero(datos.total_fallecidos) }}</strong>
+    </div>
+    <div class="mini-card tamizado">
+      <span class="mini-label">Tamizados</span>
+      <strong>{{ formatearNumero(datos.total_tamizados) }}</strong>
+    </div>
+    <div class="mini-card poblacion">
+      <span class="mini-label">Población</span>
+      <strong>{{ formatearNumero(datos.poblacion) }}</strong>
+    </div>
+  </div>
+
+  <div class="grafica-panel">
+    <h4>Comparativo del departamento</h4>
+    <div class="barra-item" *ngFor="let item of serie">
+      <div class="barra-label">
+        <span>{{ item.etiqueta }}</span>
+        <strong>{{ formatearNumero(item.valor) }}</strong>
+      </div>
+      <div class="barra-track">
+        <div class="barra-fill" [class]="'barra-fill ' + item.clase" [style.width.%]="item.porcentaje"></div>
+      </div>
+    </div>
+  </div>
+</section>

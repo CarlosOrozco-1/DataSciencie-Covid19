@@ -4,6 +4,7 @@ Este archivo contiene la lógica de negocio para leer y procesar los archivos CS
 """
 
 import pandas as pd
+import csv
 from pathlib import Path
 from typing import Optional, List, Dict
 from app.config import DATOS_DIR, ARCHIVOS_CSV
@@ -30,9 +31,69 @@ class DataService:
         for clave, nombre_archivo in ARCHIVOS_CSV.items():
             ruta = DATOS_DIR / nombre_archivo
             if ruta.exists():
-                self._dataframes[clave] = pd.read_csv(ruta)
+                self._dataframes[clave] = self._leer_csv_con_fallback(ruta)
             else:
                 print(f"Advertencia: No se encontró el archivo {nombre_archivo}")
+
+    def _leer_csv_con_fallback(self, ruta: Path) -> pd.DataFrame:
+        """
+        Lee CSV en formato estándar y aplica un fallback cuando el archivo
+        viene con cada fila envuelta en comillas (formato exportado alterno).
+        """
+        try:
+            df = pd.read_csv(ruta)
+        except Exception:
+            df = pd.DataFrame()
+
+        # Si el archivo quedó como una sola columna, aplicar parser alterno.
+        if len(df.columns) == 1:
+            return self._leer_csv_entrecomillado(ruta)
+
+        return df
+
+    def _leer_csv_entrecomillado(self, ruta: Path) -> pd.DataFrame:
+        """
+        Parsea CSV donde cada línea completa está entrecomillada.
+        Ejemplo de línea:
+        "SACATEPEQUEZ,3,""SAN LUCAS SACATEPEQUEZ"",308,28445,..."
+        """
+        filas: List[List[str]] = []
+
+        with ruta.open("r", encoding="utf-8", newline="") as archivo:
+            for linea in archivo:
+                contenido = linea.strip()
+                if not contenido:
+                    continue
+
+                # Remover comillas externas de la fila completa.
+                if contenido.startswith('"') and contenido.endswith('"'):
+                    contenido = contenido[1:-1]
+
+                # Normalizar comillas escapadas del formato alterno.
+                contenido = contenido.replace('""', '"')
+
+                fila = next(csv.reader([contenido], delimiter=",", quotechar='"'))
+                filas.append(fila)
+
+        if not filas:
+            return pd.DataFrame()
+
+        encabezados = [col.strip() for col in filas[0]]
+        df = pd.DataFrame(filas[1:], columns=encabezados)
+
+        # Convertir columnas numéricas principales y columnas de fecha.
+        columnas_numericas = {
+            "codigo_departamento",
+            "codigo_municipio",
+            "poblacion",
+        }
+        columnas_fecha = [col for col in df.columns if col.startswith("20") or col.startswith("19")]
+
+        for columna in list(columnas_numericas) + columnas_fecha:
+            if columna in df.columns:
+                df[columna] = pd.to_numeric(df[columna], errors="coerce").fillna(0)
+
+        return df
 
     def _cargar_esavi(self) -> None:
         """
